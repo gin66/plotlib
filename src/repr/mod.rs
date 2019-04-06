@@ -20,12 +20,12 @@ mod barchart;
 mod boxplot;
 mod histogram;
 mod scatter;
-pub use line::*;
-pub use function::*;
-pub use barchart::*;
-pub use boxplot::*;
-pub use histogram::*;
-pub use scatter::*;
+pub use crate::repr::line::*;
+pub use crate::repr::function::*;
+pub use crate::repr::barchart::*;
+pub use crate::repr::boxplot::*;
+pub use crate::repr::histogram::*;
+pub use crate::repr::scatter::*;
 
 /**
 A representation of data that is continuous in two dimensions.
