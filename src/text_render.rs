@@ -147,14 +147,14 @@ pub fn render_y_axis_strings(y_axis: &axis::ContinuousAxis, face_height: u32) ->
     let y_axis_label: Vec<_> = y_axis_label.chars().rev().collect();
 
     // Generate a list of strings to label the y-axis
-    let y_label_strings: Vec<_> = (0..face_height + 1)
+    let y_label_strings: Vec<_> = (0..=face_height)
         .map(|line| match y_tick_map.get(&(line as i32)) {
             Some(v) => v.to_string(),
             None => "".to_string(),
         }).collect();
 
     // Generate a list of strings to tick the y-axis
-    let y_tick_strings: Vec<_> = (0..face_height + 1)
+    let y_tick_strings: Vec<_> = (0..=face_height)
         .map(|line| match y_tick_map.get(&(line as i32)) {
             Some(_) => "-".to_string(),
             None => " ".to_string(),
@@ -197,7 +197,7 @@ pub fn render_x_axis_strings(x_axis: &axis::ContinuousAxis, face_width: u32) -> 
     let x_tick_map = tick_offset_map(x_axis, face_width as u32);
 
     // Create a string which will be printed to give the x-axis tick marks
-    let x_axis_tick_string: String = (0..face_width + 1)
+    let x_axis_tick_string: String = (0..=face_width)
         .map(|cell| match x_tick_map.get(&(cell as i32)) {
             Some(_) => '|',
             None => ' ',
@@ -291,9 +291,9 @@ pub fn render_face_bars(
 
     let mut face_strings: Vec<String> = vec![];
 
-    for line in 1..face_height + 1 {
+    for line in 1..=face_height  {
         let mut line_string = String::new();
-        for column in 1..face_width as usize + 1 {
+        for column in 1..=face_width as usize {
             // maybe use a HashSet for faster `contains()`?
             line_string.push(if bound_cells.contains(&(column as i32)) {
                 // The value of the column _below_ this one
@@ -368,9 +368,9 @@ pub fn render_face_points(
     };
 
     let mut face_strings: Vec<String> = vec![];
-    for line in 1..face_height + 1 {
+    for line in 1..=face_height {
         let mut line_string = String::new();
-        for column in 1..face_width as usize + 1 {
+        for column in 1..=face_width as usize {
             line_string.push(if points.contains(&(column as i32, line as i32)) {
                 marker
             } else {
@@ -523,7 +523,7 @@ mod tests {
     #[test]
     fn test_value_to_axis_cell_offset() {
         assert_eq!(
-            value_to_axis_cell_offset(3.0, &axis::ContinuousAxis::new(5.0, 10.0), 10),
+            value_to_axis_cell_offset(3.0, &axis::ContinuousAxis::new(5.0, 10.0, 6), 10),
             -4
         );
     }
@@ -565,7 +565,7 @@ mod tests {
 
     #[test]
     fn test_render_y_axis_strings() {
-        let y_axis = axis::ContinuousAxis::new(0.0, 10.0);
+        let y_axis = axis::ContinuousAxis::new(0.0, 10.0, 6);
 
         let (y_axis_string, longest_y_label_width) = render_y_axis_strings(&y_axis, 10);
 
@@ -577,7 +577,7 @@ mod tests {
 
     #[test]
     fn test_render_x_axis_strings() {
-        let x_axis = axis::ContinuousAxis::new(0.0, 10.0);
+        let x_axis = axis::ContinuousAxis::new(0.0, 10.0, 6);
 
         let (x_axis_string, start_offset) = render_x_axis_strings(&x_axis, 20);
 
@@ -592,8 +592,8 @@ mod tests {
     fn test_render_face_bars() {
         let data = vec![0.3, 0.5, 6.4, 5.3, 3.6, 3.6, 3.5, 7.5, 4.0];
         let h = repr::Histogram::from_slice(&data, repr::HistogramBins::Count(10));
-        let x_axis = axis::ContinuousAxis::new(0.3, 7.5);
-        let y_axis = axis::ContinuousAxis::new(0., 3.);
+        let x_axis = axis::ContinuousAxis::new(0.3, 7.5, 6);
+        let y_axis = axis::ContinuousAxis::new(0., 3., 6);
         let strings = render_face_bars(&h, &x_axis, &y_axis, 20, 10);
         assert_eq!(strings.lines().count(), 10);
         assert!(strings.lines().all(|s| s.chars().count() == 20));
@@ -627,8 +627,8 @@ mod tests {
             (8.5, 3.7),
         ];
         let s = repr::Scatter::from_slice(&data);
-        let x_axis = axis::ContinuousAxis::new(-3.575, 9.075);
-        let y_axis = axis::ContinuousAxis::new(-1.735, 5.635);
+        let x_axis = axis::ContinuousAxis::new(-3.575, 9.075, 6);
+        let y_axis = axis::ContinuousAxis::new(-1.735, 5.635, 6);
         let style = PointStyle::new();
         let strings = render_face_points(&s.data, &x_axis, &y_axis, 20, 10, &style);
         assert_eq!(strings.lines().count(), 10);

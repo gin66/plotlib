@@ -18,7 +18,7 @@ use failure::ResultExt;
 A single page page laying out the views in a grid
 */
 pub struct Page<'a> {
-    views: Vec<&'a View>,
+    views: Vec<&'a dyn View>,
     num_views: u32,
     dimensions: (u32, u32),
 }
@@ -38,7 +38,7 @@ impl<'a> Page<'a> {
     /**
     Creates a plot containing a single view
     */
-    pub fn single(view: &'a View) -> Self {
+    pub fn single(view: &'a dyn View) -> Self {
         Page::empty().add_plot(view)
     }
 
@@ -49,7 +49,7 @@ impl<'a> Page<'a> {
     }
 
     /// Add a view to the plot
-    pub fn add_plot(mut self, view: &'a View) -> Self {
+    pub fn add_plot(mut self, view: &'a dyn View) -> Self {
         self.views.push(view);
         self.num_views += 1;
         self
@@ -62,7 +62,7 @@ impl<'a> Page<'a> {
         let (width, height) = self.dimensions;
         let mut document = Document::new().set("viewBox", (0, 0, width, height));
 
-        let x_margin = 80;
+        let x_margin = 90; // should actually depend on y-axis label font size
         let y_margin = 60;
         let x_offset = 0.6 * f64::from(x_margin);
         let y_offset = 0.6 * f64::from(y_margin);
